@@ -5,8 +5,9 @@ import org.apache.camel.component.twitter.TwitterComponent
 import java.io.InputStream
 import java.util.Properties
 import org.apache.camel.Endpoint
+import org.apache.camel.component.websocket.WebsocketComponent
 
-trait ConfigureTwitterComponent {
+trait ConfigureComponents {
   self: RouteBuilder =>
 
   val configProperties = new Properties()
@@ -21,6 +22,14 @@ trait ConfigureTwitterComponent {
   })
 
   override def onJavaBuilder(builder: org.apache.camel.builder.RouteBuilder) = {
-    builder.getContext().addComponent("twitter", tc)
+    val context = builder.getContext()
+
+    // WebSocket
+    val wc = new WebsocketComponent()
+    wc.setStaticResources("classpath:web/.")
+    context.addComponent("websocket", wc)
+
+    // Twitter
+    context.addComponent("twitter", tc)
   }
 }
